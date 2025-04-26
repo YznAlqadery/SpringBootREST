@@ -1,10 +1,14 @@
 package com.yzn.springboot.crudapi.rest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.yzn.springboot.crudapi.entity.Employee;
 import com.yzn.springboot.crudapi.service.EmployeeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -12,9 +16,13 @@ public class EmployeeRestController {
 
     private EmployeeService employeeService;
 
+    private ObjectMapper objectMapper;
 
-    public EmployeeRestController(EmployeeService employeeService){
+
+    @Autowired
+    public EmployeeRestController(EmployeeService employeeService, ObjectMapper objectMapper){
         this.employeeService = employeeService;
+        this.objectMapper = objectMapper;
     }
 
     // Expose "/employees" endpoint and return a list of employees
@@ -51,5 +59,42 @@ public class EmployeeRestController {
     @PutMapping("/employees")
     public Employee updateEmployee(@RequestBody Employee employee){
         return employeeService.save(employee);
+    }
+
+    // Expose PATCH Mapping for "/employees/{employeeId}" - patch employee (partial update)
+    @PatchMapping("/employees/{employeeId}")
+    public Employee patchEmployee(@PathVariable int employeeId, @RequestBody Map<String,Object> patchPayload){
+
+        // Retrieve the employee from the database
+        Employee employee = employeeService.findById(employeeId);
+
+        // Throw exception if not found
+        if(employee == null){
+            throw new RuntimeException("Employee id not found - " + employeeId);
+        }
+
+        // Throw exception if the request body contains "id" key
+        if(patchPayload.containsKey("id")){
+            throw new RuntimeException("Employee id not allowed in request body - " + employeeId);
+        }
+
+        Employee patchedEmployee = apply(patchPayload,employee);
+
+        // Since the "id" is not 0 it will be updated
+        return employeeService.save(patchedEmployee);
+    }
+
+    private Employee apply(Map<String, Object> patchPayload, Employee employee) {
+
+        // Convert employee object to a JSON object node
+        ObjectNode employeeNode = objectMapper.convertValue(employee,ObjectNode.class);
+
+        // Convert the patchPayload map to a JSON object node
+        ObjectNode patchNode = objectMapper.convertValue(patchPayload,ObjectNode.class);
+
+        // Merge the patch updates into the employee node
+        employeeNode.setAll(patchNode);
+
+        return objectMapper.convertValue(employeeNode,Employee.class);
     }
 }
