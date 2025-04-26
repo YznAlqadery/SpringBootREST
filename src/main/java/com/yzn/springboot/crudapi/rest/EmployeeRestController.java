@@ -35,7 +35,7 @@ public class EmployeeRestController {
         return employee;
     }
 
-    // Expose POST mapping for "/employees - add a new employee
+    // Expose POST mapping for "/employees" - add a new employee
     @PostMapping("/employees")
     public Employee addEmployee(@RequestBody Employee employee){
 
@@ -44,6 +44,12 @@ public class EmployeeRestController {
         employee.setId(0);
 
         // Return the saved/updated employee
+        return employeeService.save(employee);
+    }
+
+    // Expose PUT Mapping for "/employees" - update existing employee
+    @PutMapping("/employees")
+    public Employee updateEmployee(@RequestBody Employee employee){
         return employeeService.save(employee);
     }
 }
