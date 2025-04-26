@@ -2,10 +2,7 @@ package com.yzn.springboot.crudapi.rest;
 
 import com.yzn.springboot.crudapi.entity.Employee;
 import com.yzn.springboot.crudapi.service.EmployeeService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,5 +33,17 @@ public class EmployeeRestController {
             throw new RuntimeException("Employee id not found - " + employeeId);
         }
         return employee;
+    }
+
+    // Expose POST mapping for "/employees - add a new employee
+    @PostMapping("/employees")
+    public Employee addEmployee(@RequestBody Employee employee){
+
+        // Also just in case they pass an id, set it to 0
+        // this is to force a save of the employee object instead of an update
+        employee.setId(0);
+
+        // Return the saved/updated employee
+        return employeeService.save(employee);
     }
 }
