@@ -1,4 +1,4 @@
-package com.yzn.springboot.crudapi.Entity;
+package com.yzn.springboot.crudapi.entity;
 
 
 import jakarta.persistence.*;

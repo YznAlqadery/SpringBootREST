@@ -1,10 +1,10 @@
-package com.yzn.springboot.crudapi.DAO;
+package com.yzn.springboot.crudapi.service;
 
 import com.yzn.springboot.crudapi.entity.Employee;
 
 import java.util.List;
 
-public interface EmployeeDAO {
+public interface EmployeeService {
 
     List<Employee> findAll();
 }

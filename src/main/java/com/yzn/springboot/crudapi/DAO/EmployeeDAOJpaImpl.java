@@ -1,6 +1,6 @@
 package com.yzn.springboot.crudapi.DAO;
 
-import com.yzn.springboot.crudapi.Entity.Employee;
+import com.yzn.springboot.crudapi.entity.Employee;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
