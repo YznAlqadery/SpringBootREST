@@ -1,40 +1,51 @@
 package com.yzn.springboot.crudapi.service;
 
-import com.yzn.springboot.crudapi.DAO.EmployeeDAO;
+import com.yzn.springboot.crudapi.DAO.EmployeeRepository;
 import com.yzn.springboot.crudapi.entity.Employee;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private EmployeeDAO employeeDAO;
+    private EmployeeRepository employeeRepository;
 
-    public EmployeeServiceImpl(EmployeeDAO employeeDAO){
-        this.employeeDAO = employeeDAO;
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository){
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
     public List<Employee> findAll() {
-        return employeeDAO.findAll();
+        return employeeRepository.findAll();
     }
 
     @Override
     public Employee findById(int id) {
-        return employeeDAO.findById(id);
+        // "Optional" is a different pattern instead of having to check for nulls
+        Optional<Employee> result = employeeRepository.findById(id);
+
+        Employee employee = null;
+
+        if(result.isPresent()){
+          employee = result.get();
+        }
+        else{
+            // We didn't find the employee
+            throw new RuntimeException("Didn't find employee of id - " + id);
+        }
+        return employee;
     }
 
     @Override
-    @Transactional
     public Employee save(Employee employee) {
-        return employeeDAO.save(employee);
+        return employeeRepository.save(employee);
     }
 
     @Override
-    @Transactional
     public void deleteById(int id) {
-        employeeDAO.deleteById(id);
+        employeeRepository.deleteById(id);
     }
 }
